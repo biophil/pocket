@@ -21,6 +21,7 @@ DB = db.Mist_DB()
 logging.basicConfig(filename='ops.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(pathname)s %(message)s')
+logging.getLogger("requests.packages.urllib3.connectionpool").setLevel(logging.WARNING)
 
 try :
     with open('config.json') as cfgfile :
