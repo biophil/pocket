@@ -1,0 +1,13 @@
+archive
+*__pycache__
+.DS_Store
+*.obj
+*.p
+*.html
+quarantine
+AUTHORS_FNAME
+*.md
+*.swp
+*.py.save
+*.json
+*.db
