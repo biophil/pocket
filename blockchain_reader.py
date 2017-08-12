@@ -20,7 +20,7 @@ import util.confirmation as conf
 DB = db.Mist_DB()
 logging.basicConfig(filename='ops.log',
                     level=logging.DEBUG,
-                    format='%(asctime)s %(pathname)s %(message)s')
+                    format='%(asctime)s %(levelname)s %(name)s %(message)s')
 logging.getLogger("requests.packages.urllib3.connectionpool").setLevel(logging.WARNING)
 
 try :
