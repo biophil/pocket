@@ -18,7 +18,9 @@ import util.constants as const
 import util.confirmation as conf
 
 DB = db.Mist_DB()
-logging.basicConfig(filename='ops.log',level=logging.DEBUG)
+logging.basicConfig(filename='ops.log',
+                    level=logging.DEBUG,
+                    format='%(asctime)s %(message)s')
 
 try :
     with open('config.json') as cfgfile :
