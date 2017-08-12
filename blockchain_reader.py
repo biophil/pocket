@@ -10,6 +10,7 @@ import steem as st
 from datetime import datetime,timedelta
 import time
 import json
+import logging
 
 import util.db as db
 import util.validators as val
@@ -17,7 +18,7 @@ import util.constants as const
 import util.confirmation as conf
 
 DB = db.Mist_DB()
-
+logging.basicConfig(filename='ops.log',level=logging.DEBUG)
 
 try :
     with open('config.json') as cfgfile :
@@ -68,6 +69,8 @@ if run :
                                 if mist_op is not None :
                                     op_is_valid = DB.add_op(mist_op) # adds if it's valid
                                     print(str(mist_op) + " valid: " + str(op_is_valid))
+                                    if op_is_valid :
+                                        logging.info(str(mist_op))
                                     if op_is_valid and mist_op['type'] != 'confirmation' :
                                         DB.enqueue_for_confirmation(mist_op,op)
                                 if DB.genesis_active() :
