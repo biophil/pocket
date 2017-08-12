@@ -21,7 +21,8 @@ DB = db.Mist_DB()
 logging.basicConfig(filename='ops.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
-logging.getLogger("requests.packages.urllib3.connectionpool").setLevel(logging.WARNING)
+logging.getLogger("urllib3.util.retry").setLevel(logging.WARNING)
+logging.getLogger("urllib3.connectionpool").setLevel(logging.WARNING)
 
 try :
     with open('config.json') as cfgfile :
