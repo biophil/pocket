@@ -11,3 +11,4 @@ AUTHORS_FNAME
 *.py.save
 *.json
 *.db
+*.log
