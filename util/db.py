@@ -191,8 +191,8 @@ class Mist_DB :
     def get_next_confirmation(self) :
         # return exactly one needed confirmation
         try :
-            ident = random.choice(self._db['pending_confirmations'])
-            trxid = random.choice(self._db['pending_confirmations'][ident])
+            ident = random.choice(list(self._db['pending_confirmations']))
+            trxid = random.choice(list(self._db['pending_confirmations'][ident]))
             return ident, self._db['pending_confirmations'][ident][trxid]
         except IndexError :
             return None
