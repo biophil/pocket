@@ -8,6 +8,7 @@ Created on Fri Apr 21 21:03:55 2017
 
 import pickle
 import util.constants as const
+import random
 
 
 from steem.utils import construct_identifier
@@ -189,11 +190,11 @@ class Mist_DB :
         
     def get_next_confirmation(self) :
         # return exactly one needed confirmation
-        if len(self._db['pending_confirmations'])>0 :
-            for ident in self._db['pending_confirmations'] : # this is the ugliest thing I've ever seen
-                for trxid in self._db['pending_confirmations'][ident] :
-                    return ident, self._db['pending_confirmations'][ident][trxid]
-        else :
+        try :
+            ident = random.choice(self._db['pending_confirmations'])
+            trxid = random.choice(self._db['pending_confirmations'][ident])
+            return ident, self._db['pending_confirmations'][ident][trxid]
+        except IndexError :
             return None
         
     def is_eligible(self,account) :
