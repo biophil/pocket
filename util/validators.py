@@ -14,6 +14,8 @@ from steem.utils import construct_identifier
 def constIdent(author,slug) :
     return construct_identifier(author,slug)
 
+sendCommand = const.TOKEN_NAME + 'send:'
+
 def parseSend(send) :
     # send is a string "send:<amount>@<to_account>,<optional-memo>"
     # re.match('send:)
@@ -143,16 +145,22 @@ def parseConfirm(associated_ops,steem_op,parentIdent) :
             return mist_op
     return None
         
-    
+def _parentIsGenesis(op) :
+    return (op[1]['parent_author'] == const.GENESIS_ACCOUNT) and (op[1]['parent_permlink'] == const.GENESIS_PERMLINK)
+
+def _isPocketSend(op) :
+    return op[1]['body'][0:len(sendCommand)] == sendCommand
 
 def parseOP(op,trxid,DB) :
     # parses a Steem blockchain op and returns the Mist op
     # returns None if improperly-formatted Mist op
     try :
         if op[0] == 'comment' :
-            if (op[1]['parent_author'] == const.GENESIS_ACCOUNT) and (op[1]['parent_permlink'] == const.GENESIS_PERMLINK) :
+            if _parentIsGenesis(op) or _isPocketSend(op) :
                 body = op[1]['body']
-                if body.startswith('send:') :
+                if body.startswith(sendCommand) :
+                    body = body[len(const.TOKEN_NAME):] # remove token name
+                if body.startswith('send:') : # then we're good
                     sendTup = parseSend(body) # guaranteed to be int
                     if sendTup is not None :
                         amount,to_account,memo = sendTup

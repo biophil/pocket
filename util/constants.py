@@ -25,7 +25,7 @@ class DelayedKeyboardInterrupt(object):
             self.old_handler(*self.signal_received)
 
 START_BLOCK = 1
-GENESIS_INTERVAL = (7*24*60)*20 # 7 days, 20 blocks/minute
+GENESIS_INTERVAL = (14*24*60)*20 # 7 days, 20 blocks/minute
 GENESIS_ACCOUNT = 'philipnbrown'
 GENESIS_POSTS_TH = 5
 GENESIS_CREDIT = 100000
