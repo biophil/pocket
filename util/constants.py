@@ -25,11 +25,11 @@ class DelayedKeyboardInterrupt(object):
             self.old_handler(*self.signal_received)
 
 START_BLOCK = 1
-GENESIS_INTERVAL = (14*24*60)*20 # 7 days, 20 blocks/minute
+GENESIS_INTERVAL = (14*24*60)*20 # 14 days, 20 blocks/minute
 GENESIS_ACCOUNT = 'philipnbrown'
 GENESIS_POSTS_TH = 5
-GENESIS_CREDIT = 100000
-TOKEN_NAME = 'poctest2'
+GENESIS_CREDIT = 1000001
+TOKEN_NAME = 'testpocket'
 SAVE_INTERVAL = 10*20 # 10 minutes, 20 blocks/minute
 GRAPHENE_DATE_FORMAT_STRING = '%Y-%m-%dT%H:%M:%S'
 FEE = 1

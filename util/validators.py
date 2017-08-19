@@ -20,7 +20,7 @@ def parseSend(send) :
     # send is a string "send:<amount>@<to_account>,<optional-memo>"
     # re.match('send:)
     # obviously need to use regex here.
-    match = re.match('^send:\d+@[a-z][a-z0-9\-.]{2,15}(,|$)',send)
+    match = re.match('^'+sendCommand+'\d+@[a-z][a-z0-9\-.]{2,15}(,|$)',send)
     if match is not None:
         amount = ''
         to_account = ''
@@ -159,8 +159,6 @@ def parseOP(op,trxid,DB) :
             if _parentIsGenesis(op) or _isPocketSend(op) :
                 body = op[1]['body']
                 if body.startswith(sendCommand) :
-                    body = body[len(const.TOKEN_NAME):] # remove token name
-                if body.startswith('send:') : # then we're good
                     sendTup = parseSend(body) # guaranteed to be int
                     if sendTup is not None :
                         amount,to_account,memo = sendTup
