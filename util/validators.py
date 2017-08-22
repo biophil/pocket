@@ -19,7 +19,6 @@ sendCommand = const.TOKEN_NAME + 'send:'
 def parseSend(send) :
     # send is a string "send:<amount>@<to_account>,<optional-memo>"
     # re.match('send:)
-    # obviously need to use regex here.
     match = re.match('^'+sendCommand+'\d+@[a-z][a-z0-9\-.]{2,15}(,|$)',send)
     if match is not None:
         amount = ''
@@ -27,7 +26,7 @@ def parseSend(send) :
         memo = ''
         atfound = False
         comfound = False
-        for ch in send[5:] :
+        for ch in send[len(sendCommand):] :
             if not atfound :
                 if ch=='@' :
                     atfound = True
