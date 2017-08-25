@@ -28,7 +28,11 @@ try :
     with open('config.json') as cfgfile :
         cfg = json.load(cfgfile)
 except FileNotFoundError :
-    cfg = {'confirmer-account':'','confirmer_key':'','nodes':['']}
+    cfg = {'confirmer-account':'',
+           'confirmer_key':'',
+           'nodes':[''],
+           'confirm_message':'',
+           'confirmation_active':True}
     with open('config.json','w') as cfgfile :
         json.dump(cfg,cfgfile)
     raise FileNotFoundError('Please populate config.json file with relevant values')
@@ -36,8 +40,8 @@ except FileNotFoundError :
 confirmer_account = cfg['confirmer-account']
 confirmer_key = cfg['confirmer_key']
 nodes = cfg['nodes']
-
-confirmation_active = True
+confirm_message = cfg['confirm_message']
+confirmation_active = cfg['confirmation_active']
 
 s = st.Steem(nodes=nodes,keys=[confirmer_key])
 steem = s.steemd
@@ -109,7 +113,7 @@ if run :
                         confirm = DB.get_next_confirmation()
                         if confirm is not None :
 #                            print('want to confirm this: ' + str(confirm[1]))
-                            conf.confirm_op(confirm[0],confirm[1],s,confirmer_account)
+                            conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
                             last_confirmation_time = datetime.utcnow()
             elif datetime.utcnow() > next_irr_check_time :
                 last_irr_block = s.last_irreversible_block_num

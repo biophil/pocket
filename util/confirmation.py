@@ -22,7 +22,7 @@ def format_amount(int_amount) :
     else : 
         return str(int_amount)
 
-def confirm_op(ident,needed_confirmation,s,confirmer_account) :
+def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
     # ident is for post to reply to
     # needed_confirmation is mist_op that needs to be confirmed
     descStrings = ['Successful Send of ']
@@ -75,7 +75,7 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account) :
             elif needed_confirmation['type'] == 'genesis_confirm' :
                 body += 'Success! You claimed a genesis stake of ' + str(const.GENESIS_CREDIT) + '.\n'
                 body += 'trxid:' + needed_confirmation['trxid'] + '\n'
-            body += 'enjoy!'
+            body += confirm_message
             try :
                 s.commit.post('',body,confirmer_account,reply_identifier=ident)
             except RPCError :
