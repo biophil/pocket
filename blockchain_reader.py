@@ -41,7 +41,7 @@ confirmer_account = cfg['confirmer-account']
 confirmer_key = cfg['confirmer_key']
 nodes = cfg['nodes']
 confirm_message = cfg['confirm_message']
-confirmation_active = cfg['confirmation_active']
+confirmation_active = bool(cfg['confirmation_active'])
 
 s = st.Steem(nodes=nodes,keys=[confirmer_key])
 steem = s.steemd
