@@ -1,5 +1,7 @@
 # POCKET Protocol Specification
 
+Please see [the POCKET announcement on Steemit](https://steemit.com/pocket/@biophil/pocket-announcement) and [the POCKET Genesis Post](https://steemit.com/pocket/@biophil/genesis-pocket).
+
 ## Introduction
 
 The POCKET, or Proof Of Concept Electronic Token (the K is silent), is a sub-token designed to operate on the Steem blockchain and interact with its users through a simple set of commands which users can invoke via interfaces such as [Steemit.com](http://Steemit.com) and [Busy.org](https://busy.org).
