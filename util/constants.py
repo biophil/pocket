@@ -26,10 +26,10 @@ class DelayedKeyboardInterrupt(object):
 
 START_BLOCK = 1
 GENESIS_INTERVAL = (14*24*60)*20 # 14 days, 20 blocks/minute
-GENESIS_ACCOUNT = 'philipnbrown'
+GENESIS_ACCOUNT = 'biophil'
 GENESIS_POSTS_TH = 5
 GENESIS_CREDIT = 1000001
-TOKEN_NAME = 'testpocket'
+TOKEN_NAME = 'pocket'
 SAVE_INTERVAL = 10*20 # 10 minutes, 20 blocks/minute
 GRAPHENE_DATE_FORMAT_STRING = '%Y-%m-%dT%H:%M:%S'
 FEE = 1
