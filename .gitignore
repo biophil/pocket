@@ -6,7 +6,7 @@ archive
 *.html
 quarantine
 AUTHORS_FNAME
-*.md
+
 *.swp
 *.py.save
 *.json
