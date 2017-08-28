@@ -43,7 +43,16 @@ nodes = cfg['nodes']
 confirm_message = cfg['confirm_message']
 confirmation_active = bool(cfg['confirmation_active'])
 
-s = st.Steem(nodes=nodes,keys=[confirmer_key])
+if nodes==[''] :
+    if confirmer_key == '' :
+        s = st.Steem()
+    else :
+        s = st.Steem(keys = [confirmer_key])
+else :
+    if confirmer_key == '' :
+        s = st.Steem(nodes=nodes)
+    else :
+        s = st.Steem(nodes=nodes,keys=[confirmer_key])
 steem = s.steemd
 #steem = stm.steemd
 bc = st.blockchain.Blockchain(s)
