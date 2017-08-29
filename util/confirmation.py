@@ -78,6 +78,8 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
             body += confirm_message
             try :
                 s.commit.post('',body,confirmer_account,reply_identifier=ident)
-            except RPCError :
+            except RPCError as er :
+                print(er)
                 pass
-            print('confirmed: ' + needed_confirmation['trxid'])
+            else :
+                print('confirmed: ' + needed_confirmation['trxid'])
