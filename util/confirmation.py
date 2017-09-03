@@ -47,7 +47,10 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
     except PostDoesNotExist :
         pass
     else :
-        possible_confirmations = [val.getConfirmPayload(reply.body) for reply in top_level.get_replies()]
+        try :
+            possible_confirmations = [val.getConfirmPayload(reply.body) for reply in top_level.get_replies()]
+        except AttributeError :
+            return
         found_match = False
         # for each reply, I need to check if it corresponds to the one we need.
         # if no reply corresponds to the one we need, then post a conf.
