@@ -146,6 +146,7 @@ if run :
     except KeyboardInterrupt:
         with const.DelayedKeyboardInterrupt() :
             DB.save()
+            v.save()
         print("And Done.")
         
 
