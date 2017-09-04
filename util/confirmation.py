@@ -94,7 +94,7 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
                 
 class Voter :
     
-    vote_wait_interval = 6 # seconds
+    vote_wait_interval = datetime.timedelta(seconds=6)
     votes_fname = '.votes'
     
     def __init__(self,voting_account,s,active=False) :
