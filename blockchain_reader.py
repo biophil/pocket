@@ -32,16 +32,21 @@ except FileNotFoundError :
            'confirmer_key':'',
            'nodes':[''],
            'confirm_message':'',
-           'confirmation_active':True}
+           'confirmation_active':True,
+           'vote_on_valid_confs':True}
     with open('config.json','w') as cfgfile :
         json.dump(cfg,cfgfile)
     raise FileNotFoundError('Please populate config.json file with relevant values')
 
-confirmer_account = cfg['confirmer-account']
-confirmer_key = cfg['confirmer_key']
-nodes = cfg['nodes']
-confirm_message = cfg['confirm_message']
-confirmation_active = bool(cfg['confirmation_active'])
+try :
+    confirmer_account = cfg['confirmer-account']
+    confirmer_key = cfg['confirmer_key']
+    nodes = cfg['nodes']
+    confirm_message = cfg['confirm_message']
+    confirmation_active = bool(cfg['confirmation_active'])
+    vote_on_valid_confs = bool(cfg['vote_on_valid_confs'])
+except KeyError as er:
+    raise KeyError('You may have an outdated version of the config.json file. Back yours up, delete it, and try again!')
 
 if nodes==[''] :
     if confirmer_key == '' :
