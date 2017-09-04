@@ -9,6 +9,11 @@ import steem as st
 import util.validators as val # NOTE: shouldn't import val. Make a helpers module
 import util.constants as const
 from steembase.exceptions import PostDoesNotExist, RPCError
+from util.db import pickleit
+from util.db import unpickleit
+from util.validators import constIdent
+import datetime
+import random
 
 ## note: this module is only for stuff that deals with posting confirmations,
 ## NOT validating them.
@@ -86,3 +91,65 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
                 pass
             else :
                 print('confirmed: ' + needed_confirmation['trxid'])
+                
+class Voter :
+    
+    vote_wait_interval = 6 # seconds
+    votes_fname = '.votes'
+    
+    def __init__(self,voting_account,s,active=False) :
+        self.account = voting_account
+        self.steem = s
+        self.active = active
+        self.pending_votes = set()
+        self.last_vote_time = datetime.datetime.now()
+        try :
+            self.votes_cast = unpickleit(self.votes_fname)
+        except FileNotFoundError :
+            self._reset()
+            
+    def _reset(self) :
+        self.votes_cast = set()
+        self.save()
+        
+    def _load(self) :
+        try :
+            self.votes_cast = unpickleit(self.votes_fname)
+        except :
+            print('no file! If desired, run ._reset() ro create one')
+            
+    def save(self) :
+        pickleit(self.votes_cast,self.votes_fname)
+        
+    def mark_for_voting(self,op) :
+        # add vote if active and if it's not for myself
+        if self.active :
+            if op[1]['author'] != self.account :
+                ident = constIdent(op[1]['author'],op[1]['permlink'])
+                # make sure ident isn't in cast or pending:
+                if ident not in self.votes_cast.union(self.pending_votes) :
+                    self.pending_votes.add(ident)
+
+    def vote(self) :
+        # if active, vote a single random ident from pending
+        if self.active :
+            if len(self.pending_votes) > 0 :
+                now = datetime.datetime.now()
+                if now - self.vote_wait_interval > self.last_vote_time :
+                    try :
+                        ident_to_vote = random.choice(list(self.pending_votes))
+                        self.s.commit.vote(ident_to_vote,100,self.account)
+                    except PostDoesNotExist :
+                        self.pending_votes.remove(ident_to_vote)
+                    except RPCError as er:
+                        # this isn't great; we'll see what sorts of errors come
+                        print(er)
+                        self.last_vote_time = datetime.datetime.now()
+                        pass
+                    else :
+                        self.pending_votes.remove(ident_to_vote)
+                        self.votes_cast.add(ident_to_vote)
+                        self.last_vote_time = datetime.datetime.now()
+                        
+                
+            

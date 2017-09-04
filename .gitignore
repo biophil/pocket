@@ -13,3 +13,4 @@ AUTHORS_FNAME
 *.json
 *.db
 *.log
+*.votes

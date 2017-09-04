@@ -74,6 +74,9 @@ last_parsed_block = DB.last_parsed_block()
 last_irr_block = s.last_irreversible_block_num
 next_irr_check_time = datetime.utcnow() + timedelta(seconds=block_interval)
 
+activate_voting = vote_on_valid_confs and (confirmer_key!='')
+v = conf.Voter(confirmer_account,s,active=activate_voting)
+
 run = True
 if run :
     try :
@@ -95,6 +98,9 @@ if run :
                                         logging.info(str(mist_op))
                                     if op_is_valid and mist_op['type'] != 'confirmation' :
                                         DB.enqueue_for_confirmation(mist_op,op)
+                                    if op_is_valid and mist_op['type'] == 'confirmation' :
+                                        # then op is a confirm comment and we should consider voting it
+                                        v.mark_for_voting(op)
                                 if DB.genesis_active() :
                                     if DB.past_genesis_interval(this_block) :
                                         DB.deactivate_genesis()
@@ -107,6 +113,7 @@ if run :
                                                     if payload[1]['permlink'] == 'genesis-'+const.TOKEN_NAME :
                                                         if DB.is_eligible(payload[1]['account']) :
                                                             DB.credit_genesis(payload[1]['account'])
+                                v.vote() # votes for others' confirms if voting is active
                             else : # if not active, we're pre-genesis
                                 if op[0] == 'comment' : 
                                     if not DB.is_eligible(op[1]['author']) : # eligibility
@@ -120,6 +127,7 @@ if run :
                     DB.update_last_block(last_parsed_block)
                     if last_parsed_block%const.SAVE_INTERVAL == 0 :
                         DB.save()
+                        v.save()
                     if last_parsed_block%100000 == 0 :
                         print(last_parsed_block)
                 if confirmation_active and DB.active() :
