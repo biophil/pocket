@@ -79,7 +79,12 @@ if run :
                     block = s.get_block(last_parsed_block + 1)
                     this_block = last_parsed_block + 1
 #                    print(this_block)
-                    for trx,trxid in zip(block['transactions'],block['transaction_ids']) :
+                    try :
+                        trxs = zip(block['transactions'],block['transaction_ids'])
+                    except TypeError as er :
+                        print('block number: ' + str(this_block))
+                        raise er
+                    for trx,trxid in trxs :
                         for op in trx['operations'] :
                             if DB.active() :
                                 mist_op = val.parseOP(op,trxid,DB) # check if it's properly formatted
