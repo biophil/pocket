@@ -11,5 +11,6 @@ AUTHORS_FNAME
 *.swp
 *.py.save
 *.json
-*.db
+*.db*
 *.log
+*.votes
