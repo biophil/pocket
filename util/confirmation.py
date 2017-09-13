@@ -138,7 +138,7 @@ class Voter :
                 if now - self.vote_wait_interval > self.last_vote_time :
                     try :
                         ident_to_vote = random.choice(list(self.pending_votes))
-                        self.steem.commit.vote(ident_to_vote,100,self.account)
+                        self.steem.commit.vote(ident_to_vote,10,self.account)
                     except PostDoesNotExist :
                         self.pending_votes.remove(ident_to_vote)
                     except RPCError as er:
