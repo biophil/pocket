@@ -8,7 +8,7 @@ Created on Tue Jul 11 19:33:01 2017
 import steem as st
 import util.validators as val # NOTE: shouldn't import val. Make a helpers module
 import util.constants as const
-from steembase.exceptions import PostDoesNotExist, RPCError
+from steembase.exceptions import PostDoesNotExist, RPCError, InsufficientAuthorityError
 from util.db import pickleit
 from util.db import unpickleit
 from util.validators import constIdent
@@ -141,6 +141,10 @@ class Voter :
                         self.steem.commit.vote(ident_to_vote,10,self.account)
                     except PostDoesNotExist :
                         self.pending_votes.remove(ident_to_vote)
+                    except InsufficientAuthorityError as er :
+                        print(er)
+                        self.last_vote_time = datetime.datetime.now()
+                        pass
                     except RPCError as er:
                         # this isn't great; we'll see what sorts of errors come
                         print(er)
