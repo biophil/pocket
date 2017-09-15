@@ -33,7 +33,7 @@ def parseSend(send) :
                 else :
                     amount += ch
             elif not comfound :
-                if ch==',' :
+                if ch==',' or ch=='\n':
                     comfound = True
                 else :
                     to_account += ch
