@@ -209,6 +209,23 @@ class Mist_DB :
         if self._db['pending_accounts'][account] >= const.GENESIS_POSTS_TH :
             self._db['pending_accounts'].pop(account)
             self._db['eligible_accounts'].add(account)
+            
+    def get_total_supply(self) :
+        return sum([self.get_account_balance(account) for account in self._db['accounts']])
+    
+    def get_top_accounts(self,K) :
+        # return list of accounts with K largest balances
+        acctlist = [(account,self.get_account_balance(account)) for account in self._db['accounts']]
+        acctlist.sort(key=lambda x: x[1])
+        return acctlist[-K:]
+    
+    def get_bottom_accounts(self,K) :
+        # return list of accounts with K largest balances
+        acctlist = [(account,self.get_account_balance(account)) for account in self._db['accounts']]
+        acctlist.sort(key=lambda x: x[1])
+        return acctlist[0:K]
+        
+        
 
         
 def pickleit(topickle,fname) :
