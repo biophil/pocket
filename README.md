@@ -1,9 +1,12 @@
-# pocket
-My implementation of the Pocket protocol, a subchain of the Steem blockchain
+## Pocket 
+
+The POCKET, or Proof Of Concept Electronic Token (the K is silent), is a sub-token designed to operate on the Steem blockchain and interact with its users through a simple set of commands which users can invoke via interfaces such as [Steemit.com](http://Steemit.com) and [Busy.org](https://busy.org).
+
+Please see [the POCKET announcement on Steemit](https://steemit.com/pocket/@biophil/pocket-announcement) and [the POCKET Genesis Post](https://steemit.com/pocket/@biophil/genesis-pocket).
 
 ## How to run a confirmer bot
 
-Here are basic instructions for Ubuntu 16.04, they probably fine on most Linux distribution with latest version of Python 3.5.
+Here are basic instructions for Ubuntu 16.04, they probably work fine on most Linux distribution with latest version of Python 3.5.
 
 Install the python steem library and clone the Pocket repo:
 
@@ -11,7 +14,6 @@ Install the python steem library and clone the Pocket repo:
 pip3 install steem
 git clone https://github.com/biophil/pocket
 cd pocket
-
 ```
 
 
@@ -33,6 +35,7 @@ So open `config.json` with your favorite text editor and fill in the following f
 ```
 
 If you are running a local steemd node, the last one, `nodes`, should be set to `["localhost:8092"]` (or whichever port you're running it on). 
+If you leave `"nodes"` set to its default value of `[""]`, this will use the default nodes from the steem Python library.
 Or, alternatively, you could give it a custom list of public nodes you want it to connect to like
 `["node1:8092","node2:8092"]...`
 
