@@ -167,7 +167,7 @@ The proper format of a `send` command can be verified by matching the post `body
 
 That is, "pocketsend:" followed by a non-empty integer, followed by "@", followed by valid account name, followed either by nothing or a "," and an arbitrary string.
 
-In parsing the command, everything between the ":" and the "@" is recorded as `amount`, and everything between "@" and "," or "EOL" is recorded as `to_account`.
+In parsing the command, everything between the ":" and the "@" is recorded as `amount`, and everything between "@" and "," or "EOL" is recorded as `to_account`. Note that if `to_account` is followed by a *single* linefeed `\n` character, and nothing more, the send is considered valid. This is to maintain consistency with the Python regex implementation which parses the above regex in this way.
 
 **Validity:** A `send` operation is considered valid (with respect to the current database state) if and only if `amount>0` and `from_account.balance >= amount`. Note that POCKET *does not check* whether `to_account` is actually a registered Steem account; this allows for the "creation" of POCKET accounts whose tokens are not currently spendable, but would be made so if someone registers the associated name as a Steem account.
 
