@@ -85,7 +85,12 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
                 body += 'trxid:' + needed_confirmation['trxid'] + '\n'
             body += confirm_message
             try :
-                s.commit.post('',body,confirmer_account,reply_identifier=ident)
+                pl = 're-' + top_level.author + '-' + needed_confirmation['trxid']
+                s.commit.post('',
+                              body,
+                              confirmer_account,
+                              permlink=pl,
+                              reply_identifier=ident)
             except RPCError as er :
                 print(er)
                 pass
