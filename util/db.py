@@ -50,11 +50,25 @@ class Mist_DB :
         pickleit(self._db,self.db_fname)
         
     def to_json(self,fname='db.json') :
-        db_copy = self._db
+        db_copy = self._db.copy()
         db_copy['eligible_accounts'] = list(self._db['eligible_accounts'])
         db_copy['pending_genesis_confirms'] = list(self._db['pending_genesis_confirms'])
         with open(fname,'w') as file :
             json.dump(db_copy,file)
+            
+    def from_json(self,fname='db.json',overwrite_local=False) :
+        try :
+            with open(fname) as dbfile :
+                db_json = json.load(dbfile)
+        except FileNotFoundError :
+            print('no file with name ' + fname)
+        else :
+            db = db_json.copy()
+            db['eligible_accounts'] = set(db_json['eligible_accounts'])
+            db['pending_genesis_confirms'] = set(db_json['pending_genesis_confirms'])
+            if overwrite_local :
+                self._db = db
+            return db
         
     def update_last_block(self,new_last_block) :
         self._db['last_block'] = new_last_block
