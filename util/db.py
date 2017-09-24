@@ -9,6 +9,7 @@ Created on Fri Apr 21 21:03:55 2017
 import pickle
 import util.constants as const
 import random
+import json
 
 
 from steem.utils import construct_identifier
@@ -47,6 +48,13 @@ class Mist_DB :
         
     def save(self) :
         pickleit(self._db,self.db_fname)
+        
+    def to_json(self,fname='db.json') :
+        db_copy = self._db
+        db_copy['eligible_accounts'] = list(self._db['eligible_accounts'])
+        db_copy['pending_genesis_confirms'] = list(self._db['pending_genesis_confirms'])
+        with open(fname,'w') as file :
+            json.dump(db_copy,file)
         
     def update_last_block(self,new_last_block) :
         self._db['last_block'] = new_last_block
