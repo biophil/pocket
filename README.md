@@ -42,10 +42,21 @@ Or, alternatively, you could give it a custom list of public nodes you want it t
 **Note: if you are not using a local steemd node, you may want to contact a current bot owner for a recent snapshot of the Pocket database.**
 Populating the database from scratch on public nodes may take months, since you have to scan the entire blockchain block-by-block. 
 
-Open a screen terminal and hit it:
+There are 3 startup options, passed as arguments to `blockchain_reader.py`:
+- `normal`: Starts parsing the Steem blockchain right where you last left off. If this is the first time you've run your bot, this will start at Steem block 1.
+- `replay-from-0`: Begin parsing the Steem blockchain at the beginning of history. **Danger!** This erases your current database! Consider making a backup of your `.db` file.
+- `replay-from-genesis`: Begin parsing the Steem blockchain in block number 14971640, when Pocket Genesis begins. Uses the eligibility snapshot contained in `db_pregenesis.json`. **Danger!** This erases your current database! Consider making a backup of your `.db` file.
+
+Open a screen terminal and hit it (my example command uses the `replay_from_genesis` option):
 
 ```
 screen [press Enter]
+python3 blockchain_reader.py replay-from-genesis
+```
+
+**Note:** To access the `normal` startup mode, you can simply call `blockchain_reader.py`:
+
+```
 python3 blockchain_reader.py
 ```
 
