@@ -11,6 +11,7 @@ from datetime import datetime,timedelta
 import time
 import json
 import logging
+import sys
 
 import util.db as db
 import util.validators as val
@@ -67,9 +68,21 @@ confirmation_wait_timedelta = timedelta(seconds=confirmation_wait_time)
 last_confirmation_time = datetime.utcnow() - confirmation_wait_timedelta
 block_interval = 3 # seconds
 
+if len(sys.argv) > 1 :
+    startup_behavior = sys.argv[1]
+else :
+    startup_behavior = 'normal'
+    
+if startup_behavior == 'replay-from-genesis' : # load pregenesis, overwrite db
+    DB.from_json(fname='db_pregenesis.json',overwrite_local=True)
+    DB.save()
+elif startup_behavior == 'replay-from-0' :
+    DB._reset()
+elif startup_behavior == 'normal' :
+    pass
+
 last_parsed_block = DB.last_parsed_block()
 
-#block_generator = bc.blocks(start=(last_parsed_block-1))
 
 last_irr_block = s.last_irreversible_block_num
 next_irr_check_time = datetime.utcnow() + timedelta(seconds=block_interval)
