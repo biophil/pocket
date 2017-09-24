@@ -83,8 +83,13 @@ elif startup_behavior == 'normal' :
 
 last_parsed_block = DB.last_parsed_block()
 
-
-last_irr_block = s.last_irreversible_block_num
+while True : # can't proceed without this, so loop until we get it
+    try :
+        last_irr_block = s.last_irreversible_block_num
+    except TypeError :
+        pass
+    else :
+        break
 next_irr_check_time = datetime.utcnow() + timedelta(seconds=block_interval)
 
 activate_voting = vote_on_valid_confs and (confirmer_key!='')
@@ -156,7 +161,10 @@ if run :
                             conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
                             last_confirmation_time = datetime.utcnow()
             elif datetime.utcnow() > next_irr_check_time :
-                last_irr_block = s.last_irreversible_block_num
+                try :
+                    last_irr_block = s.last_irreversible_block_num
+                except TypeError :
+                    print('problem getting block number; will try again')
                 next_irr_check_time = datetime.utcnow() + timedelta(seconds=block_interval)
             else :
                 sleeptime = 1+(next_irr_check_time-datetime.utcnow()).seconds
