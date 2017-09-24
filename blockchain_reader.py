@@ -103,13 +103,14 @@ if run :
 #                print(str(last_parsed_block+1))
                 with const.DelayedKeyboardInterrupt() : # don't let a SIGINT interrupt in the middle of a block
                     block = s.get_block(last_parsed_block + 1)
-                    this_block = last_parsed_block + 1
 #                    print(this_block)
                     try :
                         trxs = zip(block['transactions'],block['transaction_ids'])
                     except TypeError as er :
-                        print('block number: ' + str(this_block))
-                        raise er
+                        logging.exception("block number: " + str(last_parsed_block + 1))
+                        time.sleep(1)
+                        continue # don't do anything in this loop; skip back and get a good block
+                    this_block = last_parsed_block + 1
                     for trx,trxid in trxs :
                         for op in trx['operations'] :
                             if DB.active() :
