@@ -11,8 +11,10 @@ Here are basic instructions for Ubuntu 16.04, they probably work fine on most Li
 Install the python steem library and clone the Pocket repo:
 
 ```
-pip3 install steem
-pip3 install funcy==1.8
+git clone https://github.com/Netherdrake/steem-python
+cd steem-python
+sudo python3 setup.py install
+cd
 git clone https://github.com/biophil/pocket
 cd pocket
 git checkout develop
