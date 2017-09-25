@@ -12,8 +12,10 @@ Install the python steem library and clone the Pocket repo:
 
 ```
 pip3 install steem
+pip3 install funcy==1.8
 git clone https://github.com/biophil/pocket
 cd pocket
+git checkout develop
 ```
 
 
@@ -31,7 +33,7 @@ So open `config.json` with your favorite text editor and fill in the following f
 "confirmer_key": <your account's private Posting key>
 "confirmation_active": true
 "vote_on_valid_confs": true
-"nodes": [""]
+"nodes": ["https://steemd.steemitstage.com","https://steemd.steemit.com","steem.house:8090"]
 ```
 
 If you are running a local steemd node, the last one, `nodes`, should be set to `["localhost:8092"]` (or whichever port you're running it on). 
@@ -39,8 +41,8 @@ If you leave `"nodes"` set to its default value of `[""]`, this will use the def
 Or, alternatively, you could give it a custom list of public nodes you want it to connect to like
 `["node1:8092","node2:8092"]...`
 
-**Note: if you are not using a local steemd node, you may want to contact a current bot owner for a recent snapshot of the Pocket database.**
 Populating the database from scratch on public nodes may take months, since you have to scan the entire blockchain block-by-block. 
+To alleviate this, a snapshot is provided of the Pocket database immediately preceding Genesis in the file `db_pregenesis.json`. To use this snapshot, use the second of these startup options the first time you run `blockchain_reader.py` after editing config:
 
 There are 3 startup options, passed as arguments to `blockchain_reader.py`:
 - `normal`: Starts parsing the Steem blockchain right where you last left off. If this is the first time you've run your bot, this will start at Steem block 1.
@@ -54,7 +56,7 @@ screen [press Enter]
 python3 blockchain_reader.py replay-from-genesis
 ```
 
-**Note:** To access the `normal` startup mode, you can simply call `blockchain_reader.py`:
+**Note:** After this first time, to access the `normal` startup mode, you can simply call `blockchain_reader.py`:
 
 ```
 python3 blockchain_reader.py
