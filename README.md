@@ -42,7 +42,7 @@ Or, alternatively, you could give it a custom list of public nodes you want it t
 `["node1:8092","node2:8092"]...`
 
 Populating the database from scratch on public nodes may take months, since you have to scan the entire blockchain block-by-block. 
-To alleviate this, a snapshot is provided of the Pocket database immediately preceding Genesis in the file `db_pregenesis.json`. To use this snapshot, use the second of these startup options the first time you run `blockchain_reader.py` after editing config:
+To alleviate this, a snapshot is provided of the Pocket database immediately preceding Genesis in the file `db_pregenesis.json`. To use this snapshot, use the third of these startup options the first time you run `blockchain_reader.py` after editing config:
 
 There are 3 startup options, passed as arguments to `blockchain_reader.py`:
 - `normal`: Starts parsing the Steem blockchain right where you last left off. If this is the first time you've run your bot, this will start at Steem block 1.
