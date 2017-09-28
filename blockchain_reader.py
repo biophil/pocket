@@ -137,7 +137,11 @@ if run :
                                                     if payload[1]['permlink'] == 'genesis-'+const.TOKEN_NAME :
                                                         if DB.is_eligible(payload[1]['account']) :
                                                             DB.credit_genesis(payload[1]['account'])
-                                v.vote() # votes for others' confirms if voting is active
+                                try :
+                                    v.vote() # votes for others' confirms if voting is active
+                                except TypeError as er :
+                                    logging.exception("block number: " + str(last_parsed_block + 1))
+                                    # this handles the random steem library NoneType problems
                             else : # if not active, we're pre-genesis
                                 if op[0] == 'comment' : 
                                     if not DB.is_eligible(op[1]['author']) : # eligibility
