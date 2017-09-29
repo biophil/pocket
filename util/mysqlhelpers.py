@@ -76,3 +76,15 @@ TABLES['valid_sends'] = (
     "  KEY `amount` (`amount`),"
     "  FOREIGN KEY (confirmation) REFERENCES confirmations(conf_id))")
 
+TABLES['genesis_claims'] = (
+    "CREATE TABLE `genesis_claims` ("
+    "  `claim_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `trxid` VARCHAR(40) NOT NULL,"
+    "  `steem_block` INT NOT NULL,"
+    "  `time` DATETIME NOT NULL,"
+    "  `account` VARCHAR(16) NOT NULL,"
+    "  PRIMARY KEY (`claim_id`),"
+    "  KEY `account` (`account`),"
+    "  KEY `time` (`time`),"
+    "  KEY `steem_block` (`steem_block`))")
+
