@@ -15,6 +15,18 @@ MYSQL_CONFIG
 
 TABLES = {}
 
+TABLES['ops'] = (
+    "CREATE TABLE `ops` ("
+    "  `op_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `trxid` VARCHAR(40) NOT NULL,"
+    "  `steem_block` INT NOT NULL,"
+    "  `account` VARCHAR(16) NOT NULL,"
+    "  `type` INT NOT NULL,"
+    "  PRIMARY KEY (`op_id`), UNIQUE KEY `trxid` (`trxid`),"
+    "  KEY `steem_block` (`steem_block`),"
+    "  KEY `account` (`account`),"
+    "  KEY `type` (`type`))")
+
 TABLES['accounts'] = (
     "CREATE TABLE `accounts` ("
     "  `acct_id` INT NOT NULL AUTO_INCREMENT,"
