@@ -17,7 +17,6 @@ sudo python3 setup.py install
 cd
 git clone https://github.com/biophil/pocket
 cd pocket
-git checkout develop
 ```
 
 
