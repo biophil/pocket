@@ -85,7 +85,10 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
                 body += 'trxid:' + needed_confirmation['trxid'] + '\n'
             body += confirm_message
             try :
-                pl = 're-' + top_level.author + '-' + needed_confirmation['trxid']
+                pl = st.utils.sanitize_permlink('re-' + 
+                                                top_level.author + 
+                                                '-' + 
+                                                needed_confirmation['trxid'])
                 s.commit.post('',
                               body,
                               confirmer_account,
