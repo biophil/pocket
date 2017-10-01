@@ -21,11 +21,83 @@ TABLES['ops'] = (
     "  `trxid` VARCHAR(40) NOT NULL,"
     "  `steem_block` INT NOT NULL,"
     "  `account` VARCHAR(16) NOT NULL,"
-    "  `type` INT NOT NULL,"
+    "  `type_id` INT NOT NULL,"
     "  PRIMARY KEY (`op_id`), UNIQUE KEY `trxid` (`trxid`),"
     "  KEY `steem_block` (`steem_block`),"
     "  KEY `account` (`account`),"
-    "  KEY `type` (`type`))")
+    "  KEY `type_id` (`type_id`),"
+    "  FOREIGN KEY (`type_id`) REFERENCES op_types(`type_id`))")
+
+TABLES['op_types'] = (
+    "CREATE TABLE `op_types` ("
+    "  `type_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `name` VARCHAR(100) NOT NULL,"
+    "  PRIMARY KEY (`type_id`), UNIQUE KEY `type_id` (`type_id`),"
+    "  KEY `name` (`name`))")
+
+TABLES['send'] = (
+    "CREATE TABLE `send` ("
+    "  `send_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `op_id` INT NOT NULL,"
+    "  `ident` VARCHAR(1000) NOT NULL,"
+    "  `to_account` VARCHAR(16) NOT NULL,"
+    "  `amount` INT NOT NULL,"
+    "  `fee` INT NOT NULL DEFAULT 1,"
+    "  `memo` TEXT DEFAULT NULL,"
+    "  `del_send_id` INT DEFAULT NULL," # null if comment wasn't deleted
+    "  PRIMARY KEY (`send_id`),"
+    "  KEY `ident` (`ident`),"
+    "  KEY `to_account` (`to_account`),"
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
+    "  FOREIGN KEY (`del_send_id`) REFERENCES del_send(`del_send_id`))")
+
+TABLES['send_confirmation'] = (
+    "CREATE TABLE `send_confirmation` ("
+    "  `send_conf_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `op_id` INT NOT NULL,"
+    "  `send_id` INT NOT NULL,"
+    "  `ident` VARCHAR(1000) NOT NULL," # of post containing confirmation
+    "  `confirmer` VARCHAR(16) NOT NULL,"
+    "  PRIMARY KEY (`send_conf_id`),"
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
+    "  FOREIGN KEY (`send_id`) REFERENCES send(`send_id`))")
+
+TABLES['gconf_confirmation'] = (
+    "CREATE TABLE `gconf_confirmation` ("
+    "  `gconf_conf_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `op_id` INT NOT NULL,"
+    "  `gconf_id` INT NOT NULL,"
+    "  `ident` VARCHAR(1000) NOT NULL," # of post containing confirmation
+    "  `confirmer` VARCHAR(16) NOT NULL,"
+    "  PRIMARY KEY (`gconf_conf_id`),"
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
+    "  FOREIGN KEY (`gconf_id`) REFERENCES gconf(`gconf_id`))")
+
+TABLES['gconf'] = (
+    "CREATE TABLE `gconf` ("
+    "  `gconf_id` INT NOT NULL AUTO_INCREMENT,"
+    "  `op_id` INT NOT NULL,"
+    "  `ident` VARCHAR(1000) NOT NULL,"
+    "  `fee` INT NOT NULL DEFAULT 1,"
+    "  `del_gconf_id` INT DEFAULT NULL," # null if comment wasn't deleted
+    "  PRIMARY KEY (`gconf_id`),"
+    "  KEY `ident` (`ident`),"
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
+    "  FOREIGN KEY (`del_gconf_id`) REFERENCES del_gconf(`del_gconf_id`))")
+
+TABLES['del_send'] = (
+    "CREATE TABLE `del_send` ("
+    "  `del_send_id` INT NOT NULL AUTO_INCREMENT," # to find ident SELECT ident FROM send WHERE del_send_id=desired_id
+    "  `op_id` INT NOT NULL,"
+    "  PRIMARY KEY (`del_send_id`),"
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`))")
+
+TABLES['del_gconf'] = (
+    "CREATE TABLE `del_gconf` ("
+    "  `del_gconf_id` INT NOT NULL AUTO_INCREMENT," # to find ident SELECT ident FROM send WHERE del_send_id=desired_id
+    "  `op_id` INT NOT NULL,"
+    "  PRIMARY KEY (`del_gconf_id`),"
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`))")
 
 TABLES['accounts'] = (
     "CREATE TABLE `accounts` ("
