@@ -138,8 +138,8 @@ if run :
                                                         if DB.is_eligible(payload[1]['account']) :
                                                             DB.credit_genesis(payload[1]['account'])
                                 try :
-                                    v.vote() # votes for others' confirms if voting is active
                                     v.delete_extra_confirmations()
+                                    v.vote() # votes for others' confirms if voting is active
                                 except TypeError as er :
                                     logging.exception("block number: " + str(last_parsed_block + 1))
                                     # this handles the random steem library NoneType problems
