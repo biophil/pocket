@@ -166,7 +166,7 @@ if run :
 #                            print('want to confirm this: ' + str(confirm[1]))
                             ident = conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
                             last_confirmation_time = datetime.utcnow()
-                            v.add_posted_conf(confirm,ident)
+                            v.add_posted_conf(confirm[1],ident)
             elif datetime.utcnow() > next_irr_check_time :
                 try :
                     last_irr_block = s.last_irreversible_block_num
