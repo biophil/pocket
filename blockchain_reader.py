@@ -139,6 +139,7 @@ if run :
                                                             DB.credit_genesis(payload[1]['account'])
                                 try :
                                     v.vote() # votes for others' confirms if voting is active
+                                    v.delete_extra_confirmations()
                                 except TypeError as er :
                                     logging.exception("block number: " + str(last_parsed_block + 1))
                                     # this handles the random steem library NoneType problems
@@ -163,8 +164,9 @@ if run :
                         confirm = DB.get_next_confirmation()
                         if confirm is not None :
 #                            print('want to confirm this: ' + str(confirm[1]))
-                            conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
+                            ident = conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
                             last_confirmation_time = datetime.utcnow()
+                            v.posted_confirmations.add(ident)
             elif datetime.utcnow() > next_irr_check_time :
                 try :
                     last_irr_block = s.last_irreversible_block_num

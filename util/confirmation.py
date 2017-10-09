@@ -89,16 +89,20 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
                                                 top_level.author + 
                                                 '-' + 
                                                 needed_confirmation['trxid'])
-                s.commit.post('',
-                              body,
-                              confirmer_account,
-                              permlink=pl,
-                              reply_identifier=ident)
+                trx = s.commit.post('',
+                                    body,
+                                    confirmer_account,
+                                    permlink=pl,
+                                    reply_identifier=ident)
+                # if trx was successful, these should be valid calls:
+                posted_pl = trx['operations'][0][1]['permlink']
+                posted_author = trx['operations'][0][1]['author']
             except RPCError as er :
                 print(er)
                 pass
             else :
                 print('confirmed: ' + needed_confirmation['trxid'])
+                return '@' + posted_author + '/' + posted_pl
                 
 class Voter :
     
@@ -111,6 +115,7 @@ class Voter :
         self.active = active
         self.pending_votes = set()
         self.last_vote_time = datetime.datetime.now()
+        self.posted_confirmations = set()
         try :
             self.votes_cast = unpickleit(self.votes_fname)
         except FileNotFoundError :
@@ -137,6 +142,14 @@ class Voter :
                 # make sure ident isn't in cast or pending:
                 if ident not in self.votes_cast.union(self.pending_votes) :
                     self.pending_votes.add(ident)
+
+    def delete_extra_confirmations(self) :
+        extra_confirmations = self.posted_confirmations.intersection(self.pending_votes)
+        deleted = set()
+        for ident in extra_confirmations :
+            # delete it
+            deleted.add(ident)
+        self.posted_confirmations = self.posted_confirmations - deleted
 
     def vote(self) :
         # if active, vote a single random ident from pending
