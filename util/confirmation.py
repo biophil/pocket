@@ -154,11 +154,12 @@ class Voter :
             self.posted_confirmations.pop(trxid)
         
     def _delete_helper(self,ident) :
+        print('deleting late confirmation ' + ident)
         acct,permlink = st.utils.resolve_identifier(ident)
         op = ['delete_comment',
               {'author': acct,
                'permlink': permlink}]
-        tb = st.transactionbuilder.TransactionBuilder(steemd_instance=self.s.steemd)
+        tb = st.transactionbuilder.TransactionBuilder(steemd_instance=self.steem.steemd)
         tb.appendOps([op])
         tb.appendSigner(acct, 'posting')
         tb.sign()
