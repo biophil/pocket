@@ -124,7 +124,7 @@ if run :
                                         DB.enqueue_for_confirmation(mist_op,op)
                                     if op_is_valid and mist_op['type'] == 'confirmation' :
                                         # then op is a confirm comment and we should consider voting it
-                                        v.mark_for_voting(op)
+                                        v.mark_for_voting(op,mist_op['associated_trxid'])
                                 if DB.genesis_active() :
                                     if DB.past_genesis_interval(this_block) :
                                         DB.deactivate_genesis()
@@ -166,7 +166,7 @@ if run :
 #                            print('want to confirm this: ' + str(confirm[1]))
                             ident = conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
                             last_confirmation_time = datetime.utcnow()
-                            v.posted_confirmations.add(ident)
+                            v.add_posted_conf(confirm,ident)
             elif datetime.utcnow() > next_irr_check_time :
                 try :
                     last_irr_block = s.last_irreversible_block_num

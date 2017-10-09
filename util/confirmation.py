@@ -113,9 +113,9 @@ class Voter :
         self.account = voting_account
         self.steem = s
         self.active = active
-        self.pending_votes = set()
+        self.pending_votes = {}
         self.last_vote_time = datetime.datetime.now()
-        self.posted_confirmations = set()
+        self.posted_confirmations = {}
         try :
             self.votes_cast = unpickleit(self.votes_fname)
         except FileNotFoundError :
@@ -134,22 +134,24 @@ class Voter :
     def save(self) :
         pickleit(self.votes_cast,self.votes_fname)
         
-    def mark_for_voting(self,op) :
+    def mark_for_voting(self,op,associated_trxid) :
         # add vote if active and if it's not for myself
         if self.active :
             if op[1]['author'] != self.account :
                 ident = constIdent(op[1]['author'],op[1]['permlink'])
                 # make sure ident isn't in cast or pending:
-                if ident not in self.votes_cast.union(self.pending_votes) :
-                    self.pending_votes.add(ident)
+                if ident not in self.votes_cast.union(set(self.pending_votes.values())) :
+                    self.pending_votes[associated_trxid] = ident
+                    
+    def add_posted_conf(self,confirm,ident) :
+        trxid = confirm['trxid']
+        self.posted_confirmations[trxid] = ident
 
     def delete_extra_confirmations(self) :
-        extra_confirmations = self.posted_confirmations.intersection(self.pending_votes)
-        deleted = set()
-        for ident in extra_confirmations :
-            self._delete_helper(ident)
-            deleted.add(ident)
-        self.posted_confirmations = self.posted_confirmations - deleted
+        extra_conf_trxids = set(self.posted_confirmations).intersection(set(self.pending_votes))
+        for trxid in extra_conf_trxids :
+            self._delete_helper(self.posted_confirmations[trxid])
+            self.posted_confirmations.pop(trxid)
         
     def _delete_helper(self,ident) :
         acct,permlink = st.utils.resolve_identifier(ident)
@@ -169,10 +171,11 @@ class Voter :
                 now = datetime.datetime.now()
                 if now - self.vote_wait_interval > self.last_vote_time :
                     try :
-                        ident_to_vote = random.choice(list(self.pending_votes))
+                        trxid = random.choice(list(self.pending_votes))
+                        ident_to_vote = self.pending_votes[trxid]
                         self.steem.commit.vote(ident_to_vote,10,self.account)
                     except PostDoesNotExist :
-                        self.pending_votes.remove(ident_to_vote)
+                        self.pending_votes.pop(trxid)
                     except InsufficientAuthorityError as er :
                         print(er)
                         self.last_vote_time = datetime.datetime.now()
@@ -184,7 +187,7 @@ class Voter :
                         pass
                     else :
                         print('voted for confirmation ' + ident_to_vote)
-                        self.pending_votes.remove(ident_to_vote)
+                        self.pending_votes.pop(trxid)
                         self.votes_cast.add(ident_to_vote)
                         self.last_vote_time = datetime.datetime.now()
                         
