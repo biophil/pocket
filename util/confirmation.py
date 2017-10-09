@@ -147,9 +147,20 @@ class Voter :
         extra_confirmations = self.posted_confirmations.intersection(self.pending_votes)
         deleted = set()
         for ident in extra_confirmations :
-            # delete it
+            self._delete_helper(ident)
             deleted.add(ident)
         self.posted_confirmations = self.posted_confirmations - deleted
+        
+    def _delete_helper(self,ident) :
+        acct,permlink = st.utils.resolve_identifier(ident)
+        op = ['delete_comment',
+              {'author': acct,
+               'permlink': permlink}]
+        tb = st.transactionbuilder.TransactionBuilder(steemd_instance=self.s.steemd)
+        tb.appendOps([op])
+        tb.appendSigner(acct, 'posting')
+        tb.sign()
+        tb.broadcast()
 
     def vote(self) :
         # if active, vote a single random ident from pending
