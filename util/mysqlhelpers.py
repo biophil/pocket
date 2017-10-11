@@ -136,10 +136,10 @@ class MySQLWrapper :
                 json.dump(cfg,cfgfile)
             raise FileNotFoundError('Please populate mysql_config.json file with relevant values')
 
-        cnx = self.getMySQLCnx()
-        self.cnx = cnx
+        self.cnx = self.getMySQLCnx()
         self.createTables()
         self.lazy = lazy
+        # to do: make sure that table op_types has all the type names in it
         
     def getMySQLCnx(self) :
         cnx = mysql.connector.connect(**self.cfg)
