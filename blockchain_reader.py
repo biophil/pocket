@@ -124,7 +124,7 @@ if run :
                                         DB.enqueue_for_confirmation(mist_op,op)
                                     if op_is_valid and mist_op['type'] == 'confirmation' :
                                         # then op is a confirm comment and we should consider voting it
-                                        v.mark_for_voting(op)
+                                        v.mark_for_voting(op,mist_op['associated_trxid'])
                                 if DB.genesis_active() :
                                     if DB.past_genesis_interval(this_block) :
                                         DB.deactivate_genesis()
@@ -138,6 +138,7 @@ if run :
                                                         if DB.is_eligible(payload[1]['account']) :
                                                             DB.credit_genesis(payload[1]['account'])
                                 try :
+                                    v.delete_extra_confirmations()
                                     v.vote() # votes for others' confirms if voting is active
                                 except TypeError as er :
                                     logging.exception("block number: " + str(last_parsed_block + 1))
@@ -163,8 +164,10 @@ if run :
                         confirm = DB.get_next_confirmation()
                         if confirm is not None :
 #                            print('want to confirm this: ' + str(confirm[1]))
-                            conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
+                            ident = conf.confirm_op(confirm[0],confirm[1],s,confirmer_account,confirm_message)
                             last_confirmation_time = datetime.utcnow()
+                            if ident is not None :
+                                v.add_posted_conf(confirm[1],ident)
             elif datetime.utcnow() > next_irr_check_time :
                 try :
                     last_irr_block = s.last_irreversible_block_num
