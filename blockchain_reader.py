@@ -156,9 +156,11 @@ if run :
                                         DB.increment_comment_count(op[1]['author'])
                                     if op[1]['author'] == const.GENESIS_ACCOUNT: # watch for genesis activation
                                         if op[1]['title'] == 'genesis-'+const.TOKEN_NAME :
+                                            ts = st.utils.parse_time(block['timestamp'])
                                             DB.activate_genesis(this_block)
                                             DB.activate()
                                             DB.credit_genesis(const.GENESIS_ACCOUNT)
+                                            MySQL.credit_genesis(const.GENESIS_ACCOUNT,this_block,trxid,ts)
                     last_parsed_block += 1 
                     DB.update_last_block(last_parsed_block)
                     if last_parsed_block%const.SAVE_INTERVAL == 0 :

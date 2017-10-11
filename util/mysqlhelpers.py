@@ -167,13 +167,17 @@ class MySQLWrapper :
         cur = self.getCursor()
         q = "SELECT 1 FROM ops WHERE trxid=%s"
         cur.execute(q,(trxid,))
-        return not (cur.fetchone() is None)
+        to_ret = not (cur.fetchone() is None)
+        cur.close()
+        return to_ret
     
     def acct_in_db(self,account) :
         cur = self.getCursor()
         q = "SELECT 1 FROM accounts WHERE name=%s"
         cur.execute(q,(account,))
-        return not (cur.fetchone() is None)
+        to_ret = not (cur.fetchone() is None)
+        cur.close()
+        return to_ret
         
         
         
@@ -196,13 +200,14 @@ class MySQLWrapper :
             q += "VALUES ("+','.join(['%s']*4)+','
             q += "(SELECT type_id FROM op_types WHERE name='claim'))"
             cur.execute(q,(trxid,steem_block,timestamp,account))
-            cur.commit()
+            self.cnx.commit()
             if self.acct_in_db(account) :
                 # increase account's balance by genesis amount
                 pass
         else :
             # if it's in, we need to decide what to do
             pass
+        cur.close()
             
     
 
