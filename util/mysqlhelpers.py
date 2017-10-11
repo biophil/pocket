@@ -183,11 +183,21 @@ class MySQLWrapper :
         
     def add_op(self,mist_op,this_block,trxid,timestamp) :
         # cases: 
+        cur = self.getCursor()
+        try :
+            mist_op_type = mist_op['type']
+        except KeyError :
+            pass
         # send
         # send_confirm
         # gconf
+        if mist_op_type == 'genesis_confirm' :
+            op_type = 'gconf'
+            trxid = mist_op['trxid']
+            fee = mist_op['fee']
+            account = mist_op['account']
         # gconf_confirm
-        # del_send
+        # del_send (may need to refactor main code a bit... or hack)
         # del_gconf
         pass
     
@@ -211,13 +221,3 @@ class MySQLWrapper :
             
     
 
-
-#TABLES.append(['accounts',
-#    "CREATE TABLE `accounts` ("
-#    "  `acct_id` INT NOT NULL AUTO_INCREMENT,"
-#    "  `name` VARCHAR(16) NOT NULL,"
-#    "  `balance` INT NOT NULL DEFAULT 0,"
-#    "  `in_genesis` BOOL NOT NULL DEFAULT FALSE,"
-#    "  PRIMARY KEY (`acct_id`), UNIQUE KEY `name` (`name`),"
-#    "  KEY `balance` (`balance`),"
-#    "  KEY `in_genesis` (`in_genesis`))"])
