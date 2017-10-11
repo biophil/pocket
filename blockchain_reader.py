@@ -17,8 +17,10 @@ import util.db as db
 import util.validators as val
 import util.constants as const
 import util.confirmation as conf
+import util.mysqlhelpers as msh
 
 DB = db.Mist_DB()
+MySQL = msh.MySQLWrapper()
 logging.basicConfig(filename='ops.log',
                     level=logging.DEBUG,
                     format='%(asctime)s %(levelname)s %(name)s %(message)s')
@@ -119,6 +121,8 @@ if run :
                                     op_is_valid = DB.add_op(mist_op) # adds if it's valid
                                     print(str(mist_op) + " valid: " + str(op_is_valid))
                                     if op_is_valid :
+                                        ts = st.utils.parse_time(block['timestamp'])
+                                        MySQL.add_op(mist_op,this_block,trxid,ts)
                                         logging.info(str(mist_op))
                                     if op_is_valid and mist_op['type'] != 'confirmation' :
                                         DB.enqueue_for_confirmation(mist_op,op)
@@ -136,7 +140,10 @@ if run :
                                                 if payload[1]['author'] == const.GENESIS_ACCOUNT :
                                                     if payload[1]['permlink'] == 'genesis-'+const.TOKEN_NAME :
                                                         if DB.is_eligible(payload[1]['account']) :
-                                                            DB.credit_genesis(payload[1]['account'])
+                                                            ts = st.utils.parse_time(block['timestamp'])
+                                                            account = payload[1]['account']
+                                                            DB.credit_genesis(account)
+                                                            MySQL.credit_genesis(account,this_block,trxid,ts)
                                 try :
                                     v.delete_extra_confirmations()
                                     v.vote() # votes for others' confirms if voting is active

@@ -45,9 +45,11 @@ TABLES.append(['ops',
     "  `op_id` INT NOT NULL AUTO_INCREMENT,"
     "  `trxid` VARCHAR(40) NOT NULL,"
     "  `steem_block` INT NOT NULL,"
+    "  `timestamp` DATETIME NOT NULL,"
     "  `account` VARCHAR(16) NOT NULL,"
     "  `type_id` INT NOT NULL,"
-    "  PRIMARY KEY (`op_id`), UNIQUE KEY `trxid` (`trxid`),"
+    "  PRIMARY KEY (`op_id`),"
+    "  KEY `trxid` (`trxid`),"
     "  KEY `steem_block` (`steem_block`),"
     "  KEY `account` (`account`),"
     "  KEY `type_id` (`type_id`),"
@@ -120,7 +122,7 @@ TABLES.append(['gconf_confirmation',
 
 class MySQLWrapper :
     
-    def __init__(self) :
+    def __init__(self,lazy=True) :
         try :
             with open('mysql_config.json') as cfgfile :
                 self.cfg = json.load(cfgfile)
@@ -137,6 +139,7 @@ class MySQLWrapper :
         cnx = self.getMySQLCnx()
         self.cnx = cnx
         self.createTables()
+        self.lazy = lazy
         
     def getMySQLCnx(self) :
         cnx = mysql.connector.connect(**self.cfg)
@@ -159,3 +162,57 @@ class MySQLWrapper :
             else:
                 print("OK")
         cursor.close()
+        
+    def trxid_in_db(self,trxid) :
+        cur = self.getCursor()
+        q = "SELECT 1 FROM ops WHERE trxid=%s"
+        cur.execute(q,(trxid,))
+        return not (cur.fetchone() is None)
+    
+    def acct_in_db(self,account) :
+        cur = self.getCursor()
+        q = "SELECT 1 FROM accounts WHERE name=%s"
+        cur.execute(q,(account,))
+        return not (cur.fetchone() is None)
+        
+        
+        
+    def add_op(self,mist_op,this_block,trxid,timestamp) :
+        # cases: 
+        # send
+        # send_confirm
+        # gconf
+        # gconf_confirm
+        # del_send
+        # del_gconf
+        pass
+    
+        
+    def credit_genesis(self,account,steem_block,trxid,timestamp) :
+        cur = self.getCursor()
+        # this is the lazy implementation where we don't check if what's there is good
+        if not self.trxid_in_db(trxid) : # doesn't handle 2 ops in one trx!
+            q = "INSERT INTO ops (trxid,steem_block,timestamp,account,type_id) "
+            q += "VALUES ("+','.join(['%s']*4)+','
+            q += "(SELECT type_id FROM op_types WHERE name='claim'))"
+            cur.execute(q,(trxid,steem_block,timestamp,account))
+            cur.commit()
+            if self.acct_in_db(account) :
+                # increase account's balance by genesis amount
+                pass
+        else :
+            # if it's in, we need to decide what to do
+            pass
+            
+    
+
+
+#TABLES.append(['accounts',
+#    "CREATE TABLE `accounts` ("
+#    "  `acct_id` INT NOT NULL AUTO_INCREMENT,"
+#    "  `name` VARCHAR(16) NOT NULL,"
+#    "  `balance` INT NOT NULL DEFAULT 0,"
+#    "  `in_genesis` BOOL NOT NULL DEFAULT FALSE,"
+#    "  PRIMARY KEY (`acct_id`), UNIQUE KEY `name` (`name`),"
+#    "  KEY `balance` (`balance`),"
+#    "  KEY `in_genesis` (`in_genesis`))"])
