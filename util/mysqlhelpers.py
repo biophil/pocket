@@ -219,5 +219,17 @@ class MySQLWrapper :
             pass
         cur.close()
             
+    def get_op_history_by_type(self,op_type,limit=1000,oldest_block=1) :
+        # oldest is oldest steem block to check
+        cur = self.getCursor()
+        q = "SELECT * FROM ops WHERE type_id="
+        q += "(SELECT type_id FROM op_types WHERE name=%s) "
+        q += "AND steem_block>=%s "
+        q += "ORDER BY steem_block ASC LIMIT %s"
+        cur.execute(q,(op_type,oldest_block,limit))
+        res = cur.fetchall()
+        cur.close()
+        return res
+        
     
 
