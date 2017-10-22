@@ -76,7 +76,8 @@ TABLES.append(['send',
     "  KEY `ident` (`ident`),"
     "  KEY `to_account` (`to_account`),"
     "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
-    "  FOREIGN KEY (`del_send_id`) REFERENCES del_send(`del_send_id`))"])
+    "  FOREIGN KEY (`del_send_id`) REFERENCES del_send(`del_send_id`))"
+    "  DEFAULT CHARSET=utf8 "])
 
 TABLES.append(['del_gconf',
     "CREATE TABLE `del_gconf` ("
