@@ -122,7 +122,7 @@ if run :
                                     print(str(mist_op) + " valid: " + str(op_is_valid))
                                     if op_is_valid :
                                         ts = st.utils.parse_time(block['timestamp'])
-                                        MySQL.add_op(mist_op,this_block,trxid,ts)
+                                        MySQL.add_op(mist_op,op,this_block,trxid,ts)
                                         logging.info(str(mist_op))
                                     if op_is_valid and mist_op['type'] != 'confirmation' :
                                         DB.enqueue_for_confirmation(mist_op,op)

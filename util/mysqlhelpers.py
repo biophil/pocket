@@ -11,7 +11,7 @@ import mysql.connector
 from mysql.connector import errorcode
 from mysql.connector import DataError, DatabaseError, InterfaceError
 import json
-
+from steem.utils import construct_identifier
 
 TABLES = []
 
@@ -181,35 +181,73 @@ class MySQLWrapper :
         
         
         
-    def add_op(self,mist_op,this_block,trxid,timestamp) :
-        # cases: 
-        cur = self.getCursor()
+    def add_op(self,mist_op,steem_op,this_block,trxid,timestamp) :
         try :
             mist_op_type = mist_op['type']
         except KeyError :
             pass
+        ident = construct_identifier(steem_op[1]['author'],steem_op[1]['permlink'])
         # send
+        if mist_op_type == 'send' :
+            op_id = self._add_op_generic('send',
+                                         mist_op['from_account'],
+                                         this_block,
+                                         trxid,
+                                         timestamp)
+            if op_id is not None :
+                self._add_send(op_id,mist_op,ident)
         # send_confirm
         # gconf
         if mist_op_type == 'genesis_confirm' :
-            op_type = 'gconf'
-            trxid = mist_op['trxid']
-            fee = mist_op['fee']
-            account = mist_op['account']
+            op_id = self._add_op_generic('gconf',
+                                         mist_op['account'],
+                                         this_block,
+                                         trxid,
+                                         timestamp)
+            if op_id is not None :
+                self._add_gconf(op_id,mist_op,ident)
         # gconf_confirm
         # del_send (may need to refactor main code a bit... or hack)
         # del_gconf
         pass
-    
         
     def credit_genesis(self,account,steem_block,trxid,timestamp) :
+        self._add_op_generic('claim',account,steem_block,trxid,timestamp)
+        
+    def _add_send(self,op_id,mist_op,ident) :
         cur = self.getCursor()
-        # this is the lazy implementation where we don't check if what's there is good
+        # assume we're safe to add.
+        q = "INSERT INTO send (op_id,ident,to_account,amount,fee,memo) "
+        q += "VALUES (%s,%s,%s,%s,%s,%s)"
+        cur.execute(q,(op_id,
+                       ident,
+                       mist_op['to_account'],
+                       mist_op['amount'],
+                       mist_op['fee'],
+                       mist_op['memo']))
+        lastid = cur.lastrowid
+        self.cnx.commit()
+        cur.close()
+        return lastid
+        
+    def _add_gconf(self,op_id,mist_op,ident) :
+        cur = self.getCursor()
+        # assume we're safe to add.
+        q = "INSERT INTO gconf (op_id,ident,fee) "
+        q += "VALUES (%s,%s,%s)"
+        cur.execute(q,(op_id,ident,mist_op['fee']))
+        lastid = cur.lastrowid
+        self.cnx.commit()
+        cur.close()
+        return lastid
+    
+    def _add_op_generic(self,op_type,account,steem_block,trxid,timestamp) :
+        cur = self.getCursor()
         if not self.trxid_in_db(trxid) : # doesn't handle 2 ops in one trx!
             q = "INSERT INTO ops (trxid,steem_block,timestamp,account,type_id) "
             q += "VALUES ("+','.join(['%s']*4)+','
-            q += "(SELECT type_id FROM op_types WHERE name='claim'))"
-            cur.execute(q,(trxid,steem_block,timestamp,account))
+            q += "(SELECT type_id FROM op_types WHERE name=%s))"
+            cur.execute(q,(trxid,steem_block,timestamp,account,op_type))
             self.cnx.commit()
             if self.acct_in_db(account) :
                 # increase account's balance by genesis amount
@@ -217,7 +255,10 @@ class MySQLWrapper :
         else :
             # if it's in, we need to decide what to do
             pass
+        lastid = cur.lastrowid
         cur.close()
+        return lastid
+    
             
     def get_op_history_by_type(self,op_type,limit=1000,oldest_block=1) :
         # oldest is oldest steem block to check
