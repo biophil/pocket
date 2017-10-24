@@ -132,7 +132,9 @@ class MySQLWrapper :
                    'host':'',
                    'user':'',
                    'password':'',
-                   'raise_on_warnings':True}
+                   'raise_on_warnings':True,
+                   'use_unicode':True,
+                   'charset':'utf8'}
             with open('mysql_config.json','w') as cfgfile :
                 json.dump(cfg,cfgfile)
             raise FileNotFoundError('Please populate mysql_config.json file with relevant values')
