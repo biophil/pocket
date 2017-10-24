@@ -66,7 +66,7 @@ TABLES.append(['send',
     "CREATE TABLE `send` ("
     "  `send_id` INT NOT NULL AUTO_INCREMENT,"
     "  `op_id` INT NOT NULL,"
-    "  `ident` VARCHAR(1000) NOT NULL,"
+    "  `ident` VARCHAR(768) NOT NULL,"
     "  `to_account` VARCHAR(16) NOT NULL,"
     "  `amount` INT NOT NULL,"
     "  `fee` INT NOT NULL DEFAULT 1,"
@@ -90,7 +90,7 @@ TABLES.append(['gconf',
     "CREATE TABLE `gconf` ("
     "  `gconf_id` INT NOT NULL AUTO_INCREMENT,"
     "  `op_id` INT NOT NULL,"
-    "  `ident` VARCHAR(1000) NOT NULL,"
+    "  `ident` VARCHAR(768) NOT NULL,"
     "  `fee` INT NOT NULL DEFAULT 1,"
     "  `del_gconf_id` INT DEFAULT NULL," # null if comment wasn't deleted
     "  PRIMARY KEY (`gconf_id`),"
@@ -103,7 +103,7 @@ TABLES.append(['send_confirmation',
     "  `send_conf_id` INT NOT NULL AUTO_INCREMENT,"
     "  `op_id` INT NOT NULL,"
     "  `send_id` INT NOT NULL,"
-    "  `ident` VARCHAR(1000) NOT NULL," # of post containing confirmation
+    "  `ident` VARCHAR(768) NOT NULL," # of post containing confirmation
     "  `confirmer` VARCHAR(16) NOT NULL,"
     "  PRIMARY KEY (`send_conf_id`),"
     "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
@@ -114,7 +114,7 @@ TABLES.append(['gconf_confirmation',
     "  `gconf_conf_id` INT NOT NULL AUTO_INCREMENT,"
     "  `op_id` INT NOT NULL,"
     "  `gconf_id` INT NOT NULL,"
-    "  `ident` VARCHAR(1000) NOT NULL," # of post containing confirmation
+    "  `ident` VARCHAR(768) NOT NULL," # of post containing confirmation
     "  `confirmer` VARCHAR(16) NOT NULL,"
     "  PRIMARY KEY (`gconf_conf_id`),"
     "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
