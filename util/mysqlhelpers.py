@@ -146,6 +146,11 @@ class MySQLWrapper :
         
     def getMySQLCnx(self) :
         cnx = mysql.connector.connect(**self.cfg)
+        cur = cnx.cursor(prepared=True)
+        cur.execute("SET NAMES utf8mb4")
+        cur.execute("SET CHARACTER SET utf8mb4")
+        cnx.commit()
+        cur.close()
         return cnx
     
     def getCursor(self) :
