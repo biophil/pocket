@@ -292,5 +292,17 @@ class MySQLWrapper :
         cur.close()
         return res
         
-    
+    def get_account_totals(self,op_type,order='desc',limit=25) :
+        cur = self.getCursor()
+        assert order in ('desc','DESC','asc','ASC') # because who needs prepared statements?
+        q = "SELECT account, count(*) as c FROM ops "
+        q += "WHERE type_id= "
+        q += "(SELECT type_id FROM op_types WHERE name=%s) "
+        q += "GROUP BY account "
+        q += "ORDER BY c "+order
+        q += " LIMIT %s"
+        cur.execute(q,(op_type,limit))
+        res = [(row[0].decode('utf-8'), row[1]) for row in cur]
+        cur.close()
+        return res
 
