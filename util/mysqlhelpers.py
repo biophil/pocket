@@ -294,7 +294,7 @@ class MySQLWrapper :
         
     def get_account_totals(self,op_type,order='desc',limit=25) :
         cur = self.getCursor()
-        assert order in ('desc','DESC','asc','ASC') # because who needs prepared statements?
+        assert order in ('desc','DESC','asc','ASC')
         q = "SELECT account, count(*) as c FROM ops "
         q += "WHERE type_id= "
         q += "(SELECT type_id FROM op_types WHERE name=%s) "
