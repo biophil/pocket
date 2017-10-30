@@ -204,7 +204,7 @@ class MySQLWrapper :
             if op_id is not None :
                 self._add_gconf(op_id,mist_op,ident)
         if mist_op_type == 'confirmation' :
-            op_id = self._add_op_generic('gconf',
+            op_id = self._add_op_generic('confirmation',
                                          mist_op['confirmer'],
                                          this_block,
                                          trxid,
