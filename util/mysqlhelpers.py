@@ -98,27 +98,17 @@ TABLES.append(['gconf',
     "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
     "  FOREIGN KEY (`del_gconf_id`) REFERENCES del_gconf(`del_gconf_id`))"])
 
-TABLES.append(['send_confirmation',
-    "CREATE TABLE `send_confirmation` ("
-    "  `send_conf_id` INT NOT NULL AUTO_INCREMENT,"
+TABLES.append(['confirmation',
+    "CREATE TABLE `confirmation` ("
+    "  `conf_id` INT NOT NULL AUTO_INCREMENT,"
     "  `op_id` INT NOT NULL,"
-    "  `send_id` INT NOT NULL,"
     "  `ident` VARCHAR(768) NOT NULL," # of post containing confirmation
-    "  `confirmer` VARCHAR(16) NOT NULL,"
+    "  `ident_confirmed` VARCHAR(768) NOT NULL," # of post being confirmed
+    "  `trxid_confirmed` VARCHAR(40) NOT NULL," # of post being confirmed
+    "  `fee` INT NOT NULL DEFAULT 1," # collected by confirmer
     "  PRIMARY KEY (`send_conf_id`),"
-    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
-    "  FOREIGN KEY (`send_id`) REFERENCES send(`send_id`))"])
+    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`))"])
 
-TABLES.append(['gconf_confirmation',
-    "CREATE TABLE `gconf_confirmation` ("
-    "  `gconf_conf_id` INT NOT NULL AUTO_INCREMENT,"
-    "  `op_id` INT NOT NULL,"
-    "  `gconf_id` INT NOT NULL,"
-    "  `ident` VARCHAR(768) NOT NULL," # of post containing confirmation
-    "  `confirmer` VARCHAR(16) NOT NULL,"
-    "  PRIMARY KEY (`gconf_conf_id`),"
-    "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`),"
-    "  FOREIGN KEY (`gconf_id`) REFERENCES gconf(`gconf_id`))"])
 
 
 class MySQLWrapper :
@@ -204,7 +194,6 @@ class MySQLWrapper :
                                          timestamp)
             if op_id is not None :
                 self._add_send(op_id,mist_op,ident)
-        # send_confirm
         # gconf
         if mist_op_type == 'genesis_confirm' :
             op_id = self._add_op_generic('gconf',
@@ -214,10 +203,16 @@ class MySQLWrapper :
                                          timestamp)
             if op_id is not None :
                 self._add_gconf(op_id,mist_op,ident)
-        # gconf_confirm
+        if mist_op_type == 'confirmation' :
+            op_id = self._add_op_generic('gconf',
+                                         mist_op['confirmer'],
+                                         this_block,
+                                         trxid,
+                                         timestamp)
+            if op_id is not None :
+                self._add_confirmation(op_id,mist_op,ident)
         # del_send (may need to refactor main code a bit... or hack)
         # del_gconf
-        pass
         
     def credit_genesis(self,account,steem_block,trxid,timestamp) :
         self._add_op_generic('claim',account,steem_block,trxid,timestamp)
@@ -248,6 +243,23 @@ class MySQLWrapper :
         self.cnx.commit()
         cur.close()
         return lastid
+        
+    def _add_confirmation(self,op_id,mist_op,ident) :
+        cur = self.getCursor()
+        # assume we're safe to add.
+        q = "INSERT INTO confirmation "
+        q += "(op_id,ident,ident_confirmed,trxid_confirmed,fee) "
+        q += "VALUES (%s,%s,%s,%s,%s)"
+        cur.execute(q,(op_id,
+                       ident,
+                       mist_op['ident'],
+                       mist_op['trxid'],
+                       mist_op['fee']))
+        lastid = cur.lastrowid
+        self.cnx.commit()
+        cur.close()
+        return lastid
+
     
     def _add_op_generic(self,op_type,account,steem_block,trxid,timestamp) :
         cur = self.getCursor()
