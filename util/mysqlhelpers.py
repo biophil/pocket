@@ -106,7 +106,7 @@ TABLES.append(['confirmation',
     "  `ident_confirmed` VARCHAR(768) NOT NULL," # of post being confirmed
     "  `trxid_confirmed` VARCHAR(40) NOT NULL," # of post being confirmed
     "  `fee` INT NOT NULL DEFAULT 1," # collected by confirmer
-    "  PRIMARY KEY (`send_conf_id`),"
+    "  PRIMARY KEY (`conf_id`),"
     "  FOREIGN KEY (`op_id`) REFERENCES ops(`op_id`))"])
 
 
@@ -252,8 +252,8 @@ class MySQLWrapper :
         q += "VALUES (%s,%s,%s,%s,%s)"
         cur.execute(q,(op_id,
                        ident,
-                       mist_op['ident'],
-                       mist_op['trxid'],
+                       mist_op['associated_ident'],
+                       mist_op['associated_trxid'],
                        mist_op['fee']))
         lastid = cur.lastrowid
         self.cnx.commit()
