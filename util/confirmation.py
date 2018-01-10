@@ -53,7 +53,8 @@ def confirm_op(ident,needed_confirmation,s,confirmer_account,confirm_message) :
         pass
     else :
         try :
-            possible_confirmations = [val.getConfirmPayload(reply.body) for reply in top_level.get_replies()]
+            replies = s.steemd.get_content_replies(top_level.author,top_level.permlink)
+            possible_confirmations = [val.getConfirmPayload(reply['body']) for reply in replies]
         except AttributeError :
             return
         found_match = False
